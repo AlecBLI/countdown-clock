@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Time to Freedom</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      margin: 0;
+      background: transparent;
+      color: #323130;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #201f1e;
+    }
+
+    .countdown-container {
+      display: flex;
+      gap: 20px;
+      text-align: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .countdown-box {
+      background: #f3f2f1;
+      border-radius: 12px;
+      padding: 15px 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      min-width: 80px;
+    }
+
+    .countdown-number {
+      font-size: 36px;
+      font-weight: 800;
+      color: #d83b01; /* Red (Microsoft Fluent red) */
+    }
+
+    .countdown-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #605e5c;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <h2>⏳ Time to Freedom</h2>
+  <div class="countdown-container" id="countdown">
+    <div class="countdown-box">
+      <div class="countdown-number" id="days">0</div>
+      <div class="countdown-label">Days</div>
+    </div>
+    <div class="countdown-box">
+      <div class="countdown-number" id="hours">0</div>
+      <div class="countdown-label">Hours</div>
+    </div>
+    <div class="countdown-box">
+      <div class="countdown-number" id="minutes">0</div>
+      <div class="countdown-label">Minutes</div>
+    </div>
+    <div class="countdown-box">
+      <div class="countdown-number" id="seconds">0</div>
+      <div class="countdown-label">Seconds</div>
+    </div>
+  </div>
+
+  <script>
+    // 🕓 Set your target date and time here:
+    const targetDate = new Date("2026-03-31T17:00:00").getTime();
+
+    const daysEl = document.getElementById("days");
+    const hoursEl = document.getElementById("hours");
+    const minutesEl = document.getElementById("minutes");
+    const secondsEl = document.getElementById("seconds");
+    const heading = document.querySelector("h2");
+
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+
+      if (distance < 0) {
+        clearInterval(timer);
+        heading.textContent = "🎉 Freedom Achieved!";
+        document.getElementById("countdown").style.display = "none";
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      daysEl.textContent = days;
+      hoursEl.textContent = hours;
+      minutesEl.textContent = minutes;
+      secondsEl.textContent = seconds;
+    }, 1000);
+  </script>
+</body>
+</html>
