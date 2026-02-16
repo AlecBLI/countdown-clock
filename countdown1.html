@@ -1,3 +1,76 @@
 <script>
+  // 🕓 Set your target date and time here:
+  const targetDate = new Date("2026-03-31T17:00:00");
+
+  const daysEl = document.getElementById("days");
+  const hoursEl = document.getElementById("hours");
+  const minutesEl = document.getElementById("minutes");
+  const secondsEl = document.getElementById("seconds");
+  const heading = document.querySelector("h2");
+
+  // Optional: change label to be explicit
+  document.querySelector(".countdown-box .countdown-label").textContent = "Business Days";
+
+  const DAY_MS = 24 * 60 * 60 * 1000;
+
+  function startOfDay(d) {
+    const x = new Date(d);
+    x.setHours(0, 0, 0, 0);
+    return x;
+  }
+
+  function isWeekday(d) {
+    const day = d.getDay();
+    return day !== 0 && day !== 6; // Mon–Fri only
+  }
+
+  // Business-time remaining in milliseconds (Mon–Fri only, full 24h weekdays)
+  function businessMsBetween(now, target) {
+    if (now >= target) return 0;
+
+    let total = 0;
+    let curDay = startOfDay(now);
+
+    while (curDay < target) {
+      const nextDay = new Date(curDay);
+      nextDay.setDate(curDay.getDate() + 1);
+
+      const segStart = now > curDay ? now : curDay;
+      const segEnd = target < nextDay ? target : nextDay;
+
+      if (isWeekday(curDay) && segEnd > segStart) {
+        total += (segEnd - segStart);
+      }
+
+      curDay = nextDay;
+    }
+
+    return total;
+  }
+
+  const timer = setInterval(() => {
+    const now = new Date();
+
+    if (now >= targetDate) {
+      clearInterval(timer);
+      heading.textContent = "🎉 Freedom Achieved!";
+      document.getElementById("countdown").style.display = "none";
+      return;
+    }
+
+    const bizMs = businessMsBetween(now, targetDate);
+
+    const days = Math.floor(bizMs / DAY_MS);
+    const hours = Math.floor((bizMs % DAY_MS) / (60 * 60 * 1000));
+    const minutes = Math.floor((bizMs % (60 * 60 * 1000)) / (60 * 1000));
+    const seconds = Math.floor((bizMs % (60 * 1000)) / 1000);
+
+    daysEl.textContent = days;
+    hoursEl.textContent = hours;
+    minutesEl.textContent = minutes;
+    secondsEl.textContent = seconds;
+  }, 1000);
+</script><script>
   document.body.insertAdjacentHTML("beforeend","<p>JS is running ✅</p>");
 </script>
+
