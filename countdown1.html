@@ -8,24 +8,44 @@
   const secondsEl = document.getElementById("seconds");
   const heading = document.querySelector("h2");
 
-  function calculateBusinessDays(start, end) {
-    let count = 0;
-    let current = new Date(start);
+  // Optional: change label to be explicit
+  document.querySelector(".countdown-box .countdown-label").textContent = "Business Days";
 
-    // Reset time to midnight for accurate full-day counting
-    current.setHours(0, 0, 0, 0);
-    const endDate = new Date(end);
-    endDate.setHours(0, 0, 0, 0);
+  const DAY_MS = 24 * 60 * 60 * 1000;
 
-    while (current < endDate) {
-      const day = current.getDay();
-      if (day !== 0 && day !== 6) { // Not Sunday (0) or Saturday (6)
-        count++;
+  function startOfDay(d) {
+    const x = new Date(d);
+    x.setHours(0, 0, 0, 0);
+    return x;
+  }
+
+  function isWeekday(d) {
+    const day = d.getDay();
+    return day !== 0 && day !== 6; // Mon–Fri only
+  }
+
+  // Business-time remaining in milliseconds (Mon–Fri only, full 24h weekdays)
+  function businessMsBetween(now, target) {
+    if (now >= target) return 0;
+
+    let total = 0;
+    let curDay = startOfDay(now);
+
+    while (curDay < target) {
+      const nextDay = new Date(curDay);
+      nextDay.setDate(curDay.getDate() + 1);
+
+      const segStart = now > curDay ? now : curDay;
+      const segEnd = target < nextDay ? target : nextDay;
+
+      if (isWeekday(curDay) && segEnd > segStart) {
+        total += (segEnd - segStart);
       }
-      current.setDate(current.getDate() + 1);
+
+      curDay = nextDay;
     }
 
-    return count;
+    return total;
   }
 
   const timer = setInterval(() => {
@@ -38,17 +58,14 @@
       return;
     }
 
-    // Business Days
-    const businessDays = calculateBusinessDays(now, targetDate);
+    const bizMs = businessMsBetween(now, targetDate);
 
-    // Remaining time today (hours/min/sec)
-    const distance = targetDate - now;
+    const days = Math.floor(bizMs / DAY_MS);
+    const hours = Math.floor((bizMs % DAY_MS) / (60 * 60 * 1000));
+    const minutes = Math.floor((bizMs % (60 * 60 * 1000)) / (60 * 1000));
+    const seconds = Math.floor((bizMs % (60 * 1000)) / 1000);
 
-    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-    daysEl.textContent = businessDays;
+    daysEl.textContent = days;
     hoursEl.textContent = hours;
     minutesEl.textContent = minutes;
     secondsEl.textContent = seconds;
